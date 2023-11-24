@@ -159,9 +159,27 @@ loss_history   = list()
 
 # Set up the initial plot
 plt.ion()  # Turn on interactive mode
-fig, ax = plt.subplots()
-line1, = ax.plot(20*X, 20*Y, marker='o', color='blue', markersize=4, linewidth=2)
-line2, = ax.plot(20*X, 20*compute_neuron(X, weights, bias), marker='o', color='red', markersize=4, linewidth=2)
+#fig, ax = plt.subplots()
+#line1, = ax.plot(20*X, 20*Y, marker='o', color='blue', markersize=4, linewidth=2)
+#line2, = ax.plot(20*X, 20*compute_neuron(X, weights, bias), marker='o', color='red', markersize=4, linewidth=2)
+
+fig = plt.figure()
+fig, ax1 = fig.add_subplot(121, projection='3d')  # 2 rows, 1 column, 1st subplot
+ax1.plot_surface(x, y, z, cmap='rainbow')
+ax1.set_title('Optimisation Problem')
+ax1.set_xlabel('weight')
+ax1.set_ylabel('bias')
+ax1.set_zlabel('loss')
+line1, = ax1.plot(weight_history, bias_history, loss_history, marker='o', color='b', markersize=5, linewidth=2)
+
+# Second subplot
+fig, ax2 = fig.add_subplot(122, projection='3d')  # 2 rows, 1 column, 2nd subplot
+ax2.plot_surface(x, y, np.log(z), cmap='rainbow')
+ax2.set_title('Optimisation Problem (log)')
+ax2.set_xlabel('weight')
+ax2.set_ylabel('bias')
+ax2.set_zlabel('loss')
+line2, = ax2.plot(weight_history, bias_history, np.log(loss_history), marker='o', color='b', markersize=5, linewidth=2)
 plt.show()
 
 # Training loop
