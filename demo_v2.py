@@ -7,6 +7,10 @@ import matplotlib.pyplot as plt
 from IPython.display import Image
 from IPython.display import display, clear_output
 
+# %%
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+import numpy as np
 
 # %% [markdown]
 # # Something to learn
@@ -30,12 +34,14 @@ ax.set_ylabel('Liter of Water')
 
 plt.show()
 
+
 # %% [markdown]
 # # Generate Data
 
 # %%
 X = np.array([7., 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]).T
 Y = np.array([0.0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6])
+
 
 # %% [markdown]
 # # Setup the parameter
@@ -79,6 +85,60 @@ def update_weights(W, bias, dW, dB, learning_rate) :
     W    -= learning_rate * dW
     bias  -= learning_rate * dB
     return W, bias
+
+# Print initial's
+
+
+# The problem:
+x = np.linspace(0, 1, 100)
+y = np.linspace(-1, 1, 100)
+x, y = np.meshgrid(x, y)
+
+z = list()
+for i in range(100) :
+    z_i = list()
+    for j in range(100):
+        z_i.append(
+            compute_loss(Y, compute_neuron(
+                X, 
+                np.array(x[i, j]), 
+                y[i, j])
+            )
+        )
+    z.append(z_i)
+
+z = np.array(z)
+
+ax1 = fig.add_subplot(121, projection='3d')  # 2 rows, 1 column, 1st subplot
+ax1.plot_surface(x, y, z, cmap='rainbow')
+ax1.set_title('Optimisation Problem')
+ax1.set_xlabel('weight')
+ax1.set_ylabel('bias')
+ax1.set_zlabel('loss')
+
+# Second subplot
+ax2 = fig.add_subplot(122, projection='3d')  # 2 rows, 1 column, 2nd subplot
+ax2.plot_surface(x, y, np.log(z), cmap='rainbow')
+ax2.set_title('Optimisation Problem (log)')
+ax2.set_xlabel('weight')
+ax2.set_ylabel('bias')
+ax2.set_zlabel('loss')
+
+
+plt.show()
+
+
+# Show initials
+fig = plt.figure()
+ax = fig.add_subplot(111)
+line1, = ax.plot(X, Y, marker='o', color='blue', markersize=4, linewidth=2)
+line2, = ax.plot(X, 20*compute_neuron(X/20, w1, bias), marker='o', color='red', markersize=4, linewidth=2)
+
+ax.set_title('Pre-Training')
+ax.set_xlabel('Daytime')
+ax.set_ylabel('Water')
+
+plt.show()
 
 # %%
 X /= 20
@@ -128,10 +188,9 @@ for epoch in range(epochs):
         line2.set_ydata(20*compute_neuron(X, weights, bias))
         fig.canvas.draw()
         fig.canvas.flush_events()
-        plt.pause(0.5)  # Pause to update the plot
+        plt.pause(0.1)  # Pause to update the plot
         clear_output(wait=True)  # Clear output to update the plot
 
-plt.ioff()  # Turn off interactive mode
 
 
 
@@ -149,13 +208,12 @@ fig = plt.figure()
 ax = fig.add_subplot(111)
 ax.plot(20*X, 20*Y, marker='o', color='blue', markersize=4, linewidth=2)
 ax.plot(20*X, 20*compute_neuron(X, weights, bias), marker='o', color='red', markersize=4, linewidth=2)
-
 ax.set_title('Training Process ')
 ax.set_xlabel('Epoch')
 ax.set_ylabel('Loss')
 
-
 plt.show()
+print("YEs")
 
 # %%
 fig = plt.figure()
@@ -194,35 +252,24 @@ for i in range(100) :
 z = np.array(z)
 
 
+
+
+
 # %%
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-import numpy as np
 
-# Assuming x, y, z are defined properly
+fig = plt.figure(figsize=(10, 30))
+ax = fig.add_subplot(111, projection='3d')
+ax.plot_surface(x, y, z, cmap='rainbow', alpha=0.5)
+ax.plot(weight_history, bias_history, loss_history, marker='o', color='b', markersize=5, linewidth=2)
 
-fig = plt.figure(figsize=(10, 10))  # Adjust the figure size as needed
 
-# First subplot
-ax1 = fig.add_subplot(121, projection='3d')  # 2 rows, 1 column, 1st subplot
-ax1.plot_surface(x, y, z, cmap='rainbow')
-ax1.set_title('Optimisation Problem 1')
-ax1.set_xlabel('weight')
-ax1.set_ylabel('bias')
-ax1.set_zlabel('loss')
+ax.set_title('Gradiant Descent')
+ax.set_xlabel('weight')
+ax.set_ylabel('bias')
+ax.set_zlabel('loss')
 
-# Second subplot
-ax2 = fig.add_subplot(122, projection='3d')  # 2 rows, 1 column, 2nd subplot
-ax2.plot_surface(x, y, np.log(z), cmap='rainbow')
-ax2.set_title('Optimisation Problem 2')
-ax2.set_xlabel('weight')
-ax2.set_ylabel('bias')
-ax2.set_zlabel('loss')
 
-# Display the plot
 plt.show()
-
-
 # %%
 
 fig = plt.figure(figsize=(10, 30))
@@ -231,7 +278,7 @@ ax.plot_surface(x, y, np.log(z), cmap='rainbow', alpha=0.5)
 ax.plot(weight_history, bias_history, np.log(loss_history), marker='o', color='b', markersize=5, linewidth=2)
 
 
-ax.set_title('Optimisation Problem')
+ax.set_title('Gradiant Descent (log-loss)')
 ax.set_xlabel('weight')
 ax.set_ylabel('bias')
 ax.set_zlabel('loss')
